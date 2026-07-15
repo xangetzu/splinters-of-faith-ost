@@ -1,0 +1,250 @@
+---
+import { getValidatedContent } from "../lib/content/validate";
+import { withBase } from "../lib/format";
+
+const { tracks, assets } = await getValidatedContent();
+const assetById = new Map(assets.map((asset) => [asset.data.stableId, asset]));
+const catalog = tracks.sort((a, b) => a.data.sofId.localeCompare(b.data.sofId)).map((track) => ({
+  id: track.data.stableId,
+  title: track.data.title,
+  duration: track.data.durationSeconds,
+  sources: track.data.audioAssetIds.flatMap((id) => {
+    const asset = assetById.get(id);
+    return asset?.data.type === "audio"
+      ? asset.data.sources.map((source) => ({ src: withBase(source.url), type: source.mimeType }))
+      : [];
+  }),
+}));
+---
+
+<sof-player class="player" transition:persist="global-player">
+  <script is:inline type="application/json" data-catalog set:html={JSON.stringify(catalog)}></script>
+  <audio preload="none"></audio>
+  <div class="player__identity">
+    <span class="player__sigil" aria-hidden="true">✦</span>
+    <span><small data-status>Choose a track</small><strong data-title>Nothing playing</strong></span>
+  </div>
+  <div class="player__transport" aria-label="Playback controls">
+    <button type="button" data-previous aria-label="Previous track">←</button>
+    <button class="player__play" type="button" data-toggle aria-label="Play" disabled>▶</button>
+    <button type="button" data-next aria-label="Next track">→</button>
+  </div>
+  <div class="player__timeline">
+    <span data-elapsed>0:00</span>
+    <label class="sr-only" for="player-progress">Track progress</label>
+    <input id="player-progress" data-progress type="range" min="0" max="100" value="0" step="0.1" disabled />
+    <span data-duration>0:00</span>
+  </div>
+  <div class="player__modes">
+    <button type="button" data-shuffle aria-label="Shuffle" aria-pressed="false">Shuffle</button>
+    <button type="button" data-repeat aria-label="Repeat off">Repeat</button>
+    <label class="sr-only" for="player-volume">Volume</label>
+    <input id="player-volume" data-volume aria-label="Volume" type="range" min="0" max="1" value="1" step="0.05" />
+  </div>
+  <div class="sr-only" aria-live="polite" aria-atomic="true" data-announcer></div>
+</sof-player>
+
+<script>
+  import { chooseNextTrack } from "../lib/audio/queue";
+
+  type Track = { id: string; title: string; duration: number; sources: { src: string; type: string }[] };
+  type Repeat = "off" | "queue" | "track";
+  type Saved = { version: 1; activeId: string; queue: string[]; history: string[]; position: number; volume: number; shuffle: boolean; repeat: Repeat; wasPlaying: boolean; savedAt: number };
+  const STORAGE_KEY = "sof-player-state";
+
+  class SofPlayer extends HTMLElement {
+    audio!: HTMLAudioElement;
+    catalog = new Map<string, Track>();
+    queue: string[] = [];
+    history: string[] = [];
+    activeId = "";
+    sourceIndex = 0;
+    shuffle = false;
+    repeat: Repeat = "off";
+    saveTimer = 0;
+
+    connectedCallback() {
+      if (this.dataset.ready) return;
+      this.dataset.ready = "true";
+      this.audio = this.querySelector("audio")!;
+      const items = JSON.parse(this.querySelector("[data-catalog]")!.textContent ?? "[]") as Track[];
+      this.catalog = new Map(items.map((track) => [track.id, track]));
+      this.querySelector("[data-toggle]")?.addEventListener("click", () => this.toggle());
+      this.querySelector("[data-previous]")?.addEventListener("click", () => this.previous());
+      this.querySelector("[data-next]")?.addEventListener("click", () => this.next(true));
+      this.querySelector("[data-shuffle]")?.addEventListener("click", () => this.toggleShuffle());
+      this.querySelector("[data-repeat]")?.addEventListener("click", () => this.cycleRepeat());
+      this.querySelector<HTMLInputElement>("[data-volume]")?.addEventListener("input", (event) => {
+        this.audio.volume = Number((event.currentTarget as HTMLInputElement).value);
+        this.save();
+      });
+      this.querySelector<HTMLInputElement>("[data-progress]")?.addEventListener("input", (event) => {
+        if (Number.isFinite(this.audio.duration)) this.audio.currentTime = Number((event.currentTarget as HTMLInputElement).value);
+      });
+      this.audio.addEventListener("play", () => { this.render(); this.announce(`Playing ${this.track?.title}.`); this.save(); });
+      this.audio.addEventListener("pause", () => { this.render(); this.save(); });
+      this.audio.addEventListener("timeupdate", () => { this.renderTimeline(); this.throttledSave(); });
+      this.audio.addEventListener("loadedmetadata", () => this.renderTimeline());
+      this.audio.addEventListener("ended", () => this.next(false));
+      this.audio.addEventListener("error", () => this.tryNextSource());
+      document.addEventListener("click", this.handlePageCommand);
+      this.restore();
+      this.render();
+    }
+
+    get track() { return this.catalog.get(this.activeId); }
+
+    handlePageCommand = (event: MouseEvent) => {
+      const target = event.target as Element;
+      const one = target.closest<HTMLElement>("[data-player-track]");
+      if (one) {
+        const queue = JSON.parse(one.dataset.playerQueue ?? "[]") as string[];
+        this.start(one.dataset.playerTrack!, queue);
+        return;
+      }
+      const all = target.closest<HTMLElement>("[data-player-all]");
+      if (all) {
+        const queue = JSON.parse(all.dataset.playerAll ?? "[]") as string[];
+        if (queue.length) this.start(queue[0], queue);
+      }
+    };
+
+    start(id: string, queue: string[]) {
+      this.queue = queue.filter((item) => this.catalog.has(item));
+      this.history = [];
+      this.load(id, true);
+    }
+
+    load(id: string, play: boolean, position = 0) {
+      const next = this.catalog.get(id);
+      if (!next?.sources.length) return;
+      if (this.activeId && this.activeId !== id) this.history.push(this.activeId);
+      this.activeId = id;
+      this.sourceIndex = 0;
+      this.audio.preload = play ? "auto" : "metadata";
+      this.setSource(position, play);
+      this.updateMediaSession();
+      this.render();
+    }
+
+    setSource(position: number, play: boolean) {
+      const source = this.track?.sources[this.sourceIndex];
+      if (!source) return;
+      this.audio.src = source.src;
+      this.audio.load();
+      this.audio.addEventListener("loadedmetadata", () => {
+        if (position > 0) this.audio.currentTime = Math.min(position, this.audio.duration || position);
+        if (play) void this.audio.play().catch(() => this.announce("Press play to begin listening."));
+      }, { once: true });
+    }
+
+    async toggle() {
+      if (!this.track) return;
+      if (this.audio.paused) await this.audio.play(); else this.audio.pause();
+    }
+
+    previous() {
+      if (!this.track) return;
+      if (this.audio.currentTime > 5 || !this.history.length) { this.audio.currentTime = 0; return; }
+      const id = this.history.pop();
+      if (id) { this.activeId = ""; this.load(id, true); }
+    }
+
+    next(manual: boolean) {
+      if (!this.track || !this.queue.length) return;
+      if (!manual && this.repeat === "track") { this.audio.currentTime = 0; void this.audio.play(); return; }
+      const id = chooseNextTrack(this.queue, this.activeId, {
+        shuffle: this.shuffle,
+        repeatQueue: this.repeat === "queue",
+      });
+      if (id) this.load(id, true);
+      else { this.audio.pause(); this.audio.currentTime = 0; this.announce("End of queue."); }
+    }
+
+    tryNextSource() {
+      if (!this.track) return;
+      this.sourceIndex += 1;
+      if (this.sourceIndex < this.track.sources.length) {
+        this.announce(`Trying another source for ${this.track.title}.`);
+        this.setSource(this.audio.currentTime, !this.audio.paused);
+      } else { this.announce(`${this.track.title} is unavailable. Skipping.`); this.next(false); }
+    }
+
+    toggleShuffle() {
+      this.shuffle = !this.shuffle;
+      this.announce(this.shuffle ? "Shuffle on." : "Shuffle off.");
+      this.renderModes(); this.save();
+    }
+
+    cycleRepeat() {
+      this.repeat = this.repeat === "off" ? "queue" : this.repeat === "queue" ? "track" : "off";
+      this.announce(`Repeat ${this.repeat}.`); this.renderModes(); this.save();
+    }
+
+    render() {
+      this.querySelector("[data-title]")!.textContent = this.track?.title ?? "Nothing playing";
+      this.querySelector("[data-status]")!.textContent = this.track ? (this.audio.paused ? "Ready to play" : "Now playing") : "Choose a track";
+      const toggle = this.querySelector<HTMLButtonElement>("[data-toggle]")!;
+      toggle.disabled = !this.track;
+      toggle.textContent = this.audio.paused ? "▶" : "Ⅱ";
+      toggle.setAttribute("aria-label", this.audio.paused ? "Play" : "Pause");
+      this.renderTimeline(); this.renderModes();
+    }
+
+    renderTimeline() {
+      const max = Number.isFinite(this.audio?.duration) ? this.audio.duration : this.track?.duration ?? 0;
+      this.querySelector("[data-elapsed]")!.textContent = this.time(this.audio?.currentTime ?? 0);
+      this.querySelector("[data-duration]")!.textContent = this.time(max);
+      const progress = this.querySelector<HTMLInputElement>("[data-progress]")!;
+      progress.disabled = !this.track; progress.max = String(max || 100); progress.value = String(this.audio?.currentTime ?? 0);
+      progress.setAttribute("aria-valuetext", `${this.time(this.audio?.currentTime ?? 0)} of ${this.time(max)}`);
+    }
+
+    renderModes() {
+      this.querySelector("[data-shuffle]")?.setAttribute("aria-pressed", String(this.shuffle));
+      const volume = this.querySelector<HTMLInputElement>("[data-volume]");
+      if (volume) volume.value = String(this.audio.volume);
+      const repeat = this.querySelector("[data-repeat]")!;
+      repeat.textContent = this.repeat === "off" ? "Repeat" : `Repeat ${this.repeat}`;
+      repeat.setAttribute("aria-label", `Repeat ${this.repeat}`);
+    }
+
+    time(seconds: number) { return Number.isFinite(seconds) ? `${Math.floor(seconds / 60)}:${Math.floor(seconds % 60).toString().padStart(2, "0")}` : "0:00"; }
+    announce(message: string) { this.querySelector("[data-announcer]")!.textContent = message; }
+
+    save() {
+      if (!this.track) return;
+      const state: Saved = { version: 1, activeId: this.activeId, queue: this.queue, history: this.history, position: this.audio.currentTime || 0, volume: this.audio.volume, shuffle: this.shuffle, repeat: this.repeat, wasPlaying: !this.audio.paused, savedAt: Date.now() };
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    throttledSave() {
+      if (this.saveTimer) return;
+      this.saveTimer = window.setTimeout(() => { this.saveTimer = 0; this.save(); }, 1000);
+    }
+
+    restore() {
+      try {
+        const state = JSON.parse(sessionStorage.getItem(STORAGE_KEY) ?? "null") as Saved | null;
+        if (!state || state.version !== 1 || Date.now() - state.savedAt > 43_200_000 || !this.catalog.has(state.activeId)) return;
+        this.queue = state.queue.filter((id) => this.catalog.has(id));
+        this.history = state.history.filter((id) => this.catalog.has(id));
+        this.shuffle = state.shuffle; this.repeat = state.repeat; this.audio.volume = state.volume;
+        this.load(state.activeId, false, state.position);
+        if (state.wasPlaying) this.announce(`${this.track?.title} is ready to resume.`);
+      } catch { sessionStorage.removeItem(STORAGE_KEY); }
+    }
+
+    updateMediaSession() {
+      if (!("mediaSession" in navigator) || !this.track) return;
+      navigator.mediaSession.metadata = new MediaMetadata({ title: this.track.title, artist: "Kevin Larsson", album: "Splinters of Faith Original Soundtrack" });
+      navigator.mediaSession.setActionHandler("play", () => void this.audio.play());
+      navigator.mediaSession.setActionHandler("pause", () => this.audio.pause());
+      navigator.mediaSession.setActionHandler("previoustrack", () => this.previous());
+      navigator.mediaSession.setActionHandler("nexttrack", () => this.next(true));
+      navigator.mediaSession.setActionHandler("seekto", ({ seekTime }) => { if (seekTime !== undefined) this.audio.currentTime = seekTime; });
+    }
+  }
+
+  if (!customElements.get("sof-player")) customElements.define("sof-player", SofPlayer);
+</script>

@@ -1,0 +1,59 @@
+---
+import CollectionCard from "../components/CollectionCard.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getValidatedContent } from "../lib/content/validate";
+
+const { worlds, collections, tracks } = await getValidatedContent();
+const world = worlds[0];
+const featured = world.data.featuredCollectionIds
+  .map((id) => collections.find((collection) => collection.data.stableId === id))
+  .filter((collection) => collection !== undefined);
+const totalDuration = tracks.reduce((sum, track) => sum + track.data.durationSeconds, 0);
+const durationHours = Math.floor(totalDuration / 3600);
+const durationMinutes = Math.floor((totalDuration % 3600) / 60);
+---
+
+<BaseLayout description={world.data.description}>
+  <section class="home-hero" aria-labelledby="world-title">
+    <div class="home-hero__atmosphere" aria-hidden="true"></div>
+    <div class="home-hero__content content-width">
+      <p class="eyebrow">An original fantasy soundtrack</p>
+      <h1 id="world-title">Splinters <i>of</i> Faith</h1>
+      <p class="home-hero__lede">{world.data.description}</p>
+      <div class="hero-actions">
+        <button
+          class="button button--primary"
+          type="button"
+          data-player-all={JSON.stringify(tracks.sort((a, b) => a.data.sofId.localeCompare(b.data.sofId)).map((track) => track.data.stableId))}
+        >
+          Play the soundtrack
+        </button>
+        <a class="button button--quiet" href="#collections">Explore collections</a>
+      </div>
+    </div>
+    <dl class="world-stats content-width" aria-label="Soundtrack statistics">
+      <div><dt>Collections</dt><dd>{collections.length}</dd></div>
+      <div><dt>Tracks</dt><dd>{tracks.length}</dd></div>
+      <div><dt>Runtime</dt><dd>{durationHours > 0 ? `${durationHours}h ` : ""}{durationMinutes}m</dd></div>
+    </dl>
+  </section>
+
+  <section class="collection-gallery content-width section" id="collections" aria-labelledby="collections-title">
+    <header class="section-heading">
+      <div>
+        <p class="eyebrow">The world is the navigation</p>
+        <h2 id="collections-title">Where will you listen?</h2>
+      </div>
+      <p>Each collection is a different path through the world and its music.</p>
+    </header>
+    <div class="collection-grid">
+      {featured.map((collection, index) => (
+        <CollectionCard
+          collection={collection}
+          trackCount={tracks.filter((track) => track.data.collectionIds.includes(collection.data.stableId)).length}
+          index={index}
+        />
+      ))}
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,67 @@
+---
+import type { CollectionEntry } from "astro:content";
+import TrackList from "../../components/TrackList.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getValidatedContent } from "../../lib/content/validate";
+import { formatDuration, withBase } from "../../lib/format";
+
+export async function getStaticPaths() {
+  const content = await getValidatedContent();
+  return content.collections.map((collection) => ({
+    params: { slug: collection.data.slug },
+    props: { collection },
+  }));
+}
+
+interface Props {
+  collection: CollectionEntry<"collections">;
+}
+
+const { collection } = Astro.props;
+const { tracks, assets } = await getValidatedContent();
+const trackById = new Map(tracks.map((track) => [track.data.stableId, track]));
+const collectionTracks = collection.data.trackIds
+  ? collection.data.trackIds.map((id) => trackById.get(id)).filter((track) => track !== undefined)
+  : tracks
+      .filter((track) => track.data.collectionIds.includes(collection.data.stableId))
+      .sort((a, b) => a.data.sofId.localeCompare(b.data.sofId));
+const assetUrls = new Map(
+  assets
+    .filter((asset) => asset.data.type === "audio")
+    .map((asset) => [asset.data.stableId, asset.data.sources[0].url]),
+);
+const totalDuration = collectionTracks.reduce((sum, track) => sum + track.data.durationSeconds, 0);
+---
+
+<BaseLayout title={collection.data.title} description={collection.data.description} theme={collection.data.theme}>
+  <section class="collection-hero" aria-labelledby="collection-title">
+    <div class="collection-hero__field" aria-hidden="true"></div>
+    <div class="collection-hero__content content-width">
+      <a class="back-link" href={withBase("/")}>← Return to the world</a>
+      <p class="eyebrow">{collection.data.kind} collection</p>
+      <h1 id="collection-title">{collection.data.title}</h1>
+      <p>{collection.data.description}</p>
+      <div class="hero-actions">
+        <button
+          class="button button--primary"
+          type="button"
+          data-player-all={JSON.stringify(collectionTracks.map((track) => track.data.stableId))}
+        >
+          Play all
+        </button>
+        <a class="button button--quiet" href="#track-list">View track list</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="track-section content-width section" id="track-list" aria-labelledby="track-list-title">
+    <header class="section-heading section-heading--compact">
+      <div>
+        <p class="eyebrow">Listen in order</p>
+        <h2 id="track-list-title">The music of {collection.data.title}</h2>
+      </div>
+      <p>{collectionTracks.length} {collectionTracks.length === 1 ? "track" : "tracks"} · {formatDuration(totalDuration)}</p>
+    </header>
+    <TrackList tracks={collectionTracks} assetUrls={assetUrls} />
+  </section>
+</BaseLayout>

@@ -1,0 +1,28 @@
+stableId: COL-FOR-001
+slug: forest
+title: Forest
+status: released
+kind: biome
+sofScope: 03-01
+description: Music for old trees, hidden paths, danger, and sacred places.
+tagline: Beneath the canopy, every path has a voice.
+theme:
+  accent: "#b8a45d"
+  accentContrast: "#10170f"
+  surface: "#142019"
+  atmosphere: "#294c35"
+completionPercentage: 100
+relatedCollectionIds:
+  - COL-SUI-001
+trackIds:
+  - TRK-SOF-03-01-01-01
+  - TRK-SOF-03-01-02-01
+  - TRK-SOF-03-01-03-01
+  - TRK-SOF-03-01-04-01
+  - TRK-SOF-03-01-04-02
+  - TRK-SOF-03-01-05-01
+  - TRK-SOF-03-01-05-02
+  - TRK-SOF-03-01-06-01
+  - TRK-SOF-03-01-07-01
+  - TRK-SOF-03-01-07-02
+  - TRK-SOF-03-01-07-03

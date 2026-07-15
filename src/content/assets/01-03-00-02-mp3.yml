@@ -1,0 +1,20 @@
+stableId: AST-AUD-01-03-00-02-MP3
+type: audio
+title: Their Watch Has Ended MP3
+purpose: both
+codec: mp3
+bitrateKbps: 320
+sampleRateHz: 44100
+channels: 2
+sources:
+  - url: audio/01-03-00-02/their-watch-has-ended.mp3
+    mimeType: audio/mpeg
+    byteSize: 708735
+    provider: github-pages
+rights:
+  copyrightHolder: Kevin Larsson
+  usage:
+    - stream
+    - download
+  licenseName: CC BY-NC 4.0
+  licenseUrl: https://creativecommons.org/licenses/by-nc/4.0/

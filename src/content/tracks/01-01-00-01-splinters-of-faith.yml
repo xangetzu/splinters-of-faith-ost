@@ -1,0 +1,16 @@
+stableId: TRK-SOF-01-01-00-01
+sofId: 01-01-00-01
+slug: splinters-of-faith
+title: Splinters of Faith
+status: released
+description: The main suite for the Splinters of Faith soundtrack.
+durationSeconds: 623
+collectionIds: [COL-SUI-001]
+audioAssetIds: [AST-AUD-01-01-00-01-MP3]
+tags: [suite, main-theme]
+credits:
+  - name: Kevin Larsson
+    role: Composer and recording artist
+releaseDate: 2026-06-02
+featured: true
+downloadEnabled: true

@@ -86,7 +86,7 @@ Unless overridden during content review, every initial MP3 asset uses:
 
 ```yaml
 type: audio
-purpose: stream
+purpose: both
 mimeType: audio/mpeg
 codec: mp3
 bitrateKbps: 320
@@ -95,13 +95,16 @@ channels: 2
 provider: github-pages
 rights:
   copyrightHolder: Kevin Larsson
-  usage: stream
-  licenseName: All Rights Reserved
+  usage:
+    - stream
+    - download
+  licenseName: CC BY-NC 4.0
+  licenseUrl: https://creativecommons.org/licenses/by-nc/4.0/
 ```
 
-The copyright holder and public usage terms require explicit owner confirmation
-before publication. Repository `LICENSE` terms must not be assumed to grant
-rights to soundtrack media unless they explicitly say so.
+Music licensing is defined separately in `LICENSE-MUSIC.md`. The repository's
+CC0 source-code license and visual-asset notice do not apply to soundtrack
+compositions or recordings.
 
 ## Source Metadata Observations
 
@@ -125,7 +128,8 @@ Approve or amend:
 3. Title casing and slugs.
 4. Forest subtype labels.
 5. Deployment URL structure.
-6. Copyright holder and public streaming terms.
+6. Copyright holder and public streaming terms. (Approved: Kevin Larsson,
+   CC BY-NC 4.0.)
 
 No media should be copied into `public/audio/` until these decisions and the
 revised vertical slice are approved.

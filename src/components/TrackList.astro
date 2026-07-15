@@ -1,0 +1,47 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { formatDuration, withBase } from "../lib/format";
+
+interface Props {
+  tracks: CollectionEntry<"tracks">[];
+  assetUrls: Map<string, string>;
+}
+
+const { tracks, assetUrls } = Astro.props;
+---
+
+<ol class="track-list">
+  {
+    tracks.map((track, index) => {
+      const source = assetUrls.get(track.data.audioAssetIds[0]);
+      return (
+        <li class="track-row">
+          <span class="track-row__number" aria-hidden="true">
+            {(index + 1).toString().padStart(2, "0")}
+          </span>
+          <span class="track-row__identity">
+            <strong>{track.data.title}</strong>
+            <span>{track.data.subtype ?? "Original soundtrack"}</span>
+          </span>
+          <time datetime={`PT${track.data.durationSeconds}S`}>
+            {formatDuration(track.data.durationSeconds)}
+          </time>
+          <button
+            class="track-row__play"
+            type="button"
+            data-player-track={track.data.stableId}
+            data-player-queue={JSON.stringify(tracks.map((entry) => entry.data.stableId))}
+            aria-label={`Play ${track.data.title}`}
+          >
+            Play
+          </button>
+          {source && (
+            <a class="track-row__download" href={withBase(source)} download>
+              Download <span class="sr-only">{track.data.title}</span>
+            </a>
+          )}
+        </li>
+      );
+    })
+  }
+</ol>

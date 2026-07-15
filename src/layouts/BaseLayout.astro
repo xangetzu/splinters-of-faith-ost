@@ -1,0 +1,72 @@
+---
+import { ClientRouter } from "astro:transitions";
+import Player from "../components/Player.astro";
+import { withBase } from "../lib/format";
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+  theme?: {
+    accent: string;
+    accentContrast: string;
+    surface: string;
+    atmosphere: string;
+  };
+}
+
+const {
+  title,
+  description = "Explore the world of Splinters of Faith through its original soundtrack.",
+  theme,
+} = Astro.props;
+const siteTitle = "Splinters of Faith Original Soundtrack";
+const pageTitle = title ? `${title} | ${siteTitle}` : siteTitle;
+const themeStyle = theme
+  ? `--theme-accent:${theme.accent};--theme-accent-contrast:${theme.accentContrast};--theme-surface:${theme.surface};--theme-atmosphere:${theme.atmosphere}`
+  : undefined;
+---
+
+<!doctype html>
+<html lang="en" style={themeStyle}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content={theme?.surface ?? "#101410"} />
+    <link rel="icon" href={`data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✦</text></svg>`} />
+    <title>{pageTitle}</title>
+    <ClientRouter />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <div class="site-frame">
+      <header class="site-header">
+        <a class="wordmark" href={withBase("/")} aria-label="Splinters of Faith soundtrack home">
+          <span class="wordmark__sigil" aria-hidden="true">✦</span>
+          <span>
+            <strong>Splinters of Faith</strong>
+            <small>Original Soundtrack</small>
+          </span>
+        </a>
+        <nav aria-label="Primary navigation">
+          <a href={withBase("/")}>World</a>
+          <a href={withBase("/#collections")}>Collections</a>
+        </nav>
+      </header>
+
+      <main id="main-content" tabindex="-1">
+        <slot />
+      </main>
+
+      <footer class="site-footer">
+        <p>Music composed and recorded by Kevin Larsson.</p>
+        <p>
+          Music licensed under
+          <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a>.
+        </p>
+      </footer>
+    </div>
+    <Player />
+  </body>
+</html>

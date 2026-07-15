@@ -1,0 +1,19 @@
+stableId: COL-STG-001
+slug: stingers
+title: Stingers
+status: released
+kind: utility
+sofScope: 01-03
+description: Brief musical punctuation for decisive campaign moments.
+tagline: Moments that leave their mark.
+theme:
+  accent: "#d66b52"
+  accentContrast: "#1d0907"
+  surface: "#241311"
+  atmosphere: "#682c28"
+completionPercentage: 100
+relatedCollectionIds:
+  - COL-SUI-001
+trackIds:
+  - TRK-SOF-01-03-00-01
+  - TRK-SOF-01-03-00-02

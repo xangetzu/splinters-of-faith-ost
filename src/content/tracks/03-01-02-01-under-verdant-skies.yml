@@ -1,0 +1,16 @@
+stableId: TRK-SOF-03-01-02-01
+sofId: 03-01-02-01
+slug: under-verdant-skies
+title: Under Verdant Skies
+status: released
+description: A field piece from the Forest collection.
+durationSeconds: 341
+collectionIds: [COL-FOR-001]
+audioAssetIds: [AST-AUD-03-01-02-01-MP3]
+subtype: Field
+tags: [forest, field]
+credits:
+  - name: Kevin Larsson
+    role: Composer and recording artist
+releaseDate: 2026-06-02
+downloadEnabled: true

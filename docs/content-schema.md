@@ -311,9 +311,11 @@ sources:
     byteSize: 98245120
     provider: external-media-origin
 rights:
-  copyrightHolder: Splinters of Faith
-  usage: download
-  licenseName: All Rights Reserved
+  copyrightHolder: Kevin Larsson
+  usage:
+    - download
+  licenseName: CC BY-NC 4.0
+  licenseUrl: https://creativecommons.org/licenses/by-nc/4.0/
 ```
 
 ## Validation Rules

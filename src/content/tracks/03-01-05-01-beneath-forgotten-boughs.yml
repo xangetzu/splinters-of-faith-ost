@@ -1,0 +1,16 @@
+stableId: TRK-SOF-03-01-05-01
+sofId: 03-01-05-01
+slug: beneath-forgotten-boughs
+title: Beneath Forgotten Boughs
+status: released
+description: An event piece from the Forest collection.
+durationSeconds: 325
+collectionIds: [COL-FOR-001]
+audioAssetIds: [AST-AUD-03-01-05-01-MP3]
+subtype: Event
+tags: [forest, event]
+credits:
+  - name: Kevin Larsson
+    role: Composer and recording artist
+releaseDate: 2026-06-02
+downloadEnabled: true

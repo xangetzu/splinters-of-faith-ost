@@ -1,0 +1,16 @@
+stableId: TRK-SOF-03-01-06-01
+sofId: 03-01-06-01
+slug: running-the-green
+title: Running the Green
+status: released
+description: A travel piece from the Forest collection.
+durationSeconds: 229
+collectionIds: [COL-FOR-001]
+audioAssetIds: [AST-AUD-03-01-06-01-MP3]
+subtype: Travel
+tags: [forest, travel]
+credits:
+  - name: Kevin Larsson
+    role: Composer and recording artist
+releaseDate: 2026-06-02
+downloadEnabled: true

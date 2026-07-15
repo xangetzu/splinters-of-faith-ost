@@ -1,0 +1,20 @@
+stableId: AST-AUD-01-02-00-02-MP3
+type: audio
+title: Oak and Ale MP3
+purpose: both
+codec: mp3
+bitrateKbps: 320
+sampleRateHz: 44100
+channels: 2
+sources:
+  - url: audio/01-02-00-02/oak-and-ale.mp3
+    mimeType: audio/mpeg
+    byteSize: 3882089
+    provider: github-pages
+rights:
+  copyrightHolder: Kevin Larsson
+  usage:
+    - stream
+    - download
+  licenseName: CC BY-NC 4.0
+  licenseUrl: https://creativecommons.org/licenses/by-nc/4.0/

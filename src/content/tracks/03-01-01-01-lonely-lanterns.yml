@@ -1,0 +1,16 @@
+stableId: TRK-SOF-03-01-01-01
+sofId: 03-01-01-01
+slug: lonely-lanterns
+title: Lonely Lanterns
+status: released
+description: A town piece from the Forest collection.
+durationSeconds: 139
+collectionIds: [COL-FOR-001]
+audioAssetIds: [AST-AUD-03-01-01-01-MP3]
+subtype: Town
+tags: [forest, town]
+credits:
+  - name: Kevin Larsson
+    role: Composer and recording artist
+releaseDate: 2026-06-02
+downloadEnabled: true

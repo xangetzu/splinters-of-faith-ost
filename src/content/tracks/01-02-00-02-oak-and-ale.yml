@@ -1,0 +1,15 @@
+stableId: TRK-SOF-01-02-00-02
+sofId: 01-02-00-02
+slug: oak-and-ale
+title: Oak and Ale
+status: released
+description: A piece from the Tavern Music collection.
+durationSeconds: 97
+collectionIds: [COL-TAV-001]
+audioAssetIds: [AST-AUD-01-02-00-02-MP3]
+tags: [tavern]
+credits:
+  - name: Kevin Larsson
+    role: Composer and recording artist
+releaseDate: 2026-06-02
+downloadEnabled: true

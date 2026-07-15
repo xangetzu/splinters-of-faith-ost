@@ -1,0 +1,17 @@
+stableId: COL-SUI-001
+slug: main-suite
+title: Main Suite
+status: released
+kind: suite
+sofScope: 01-01
+description: The central musical suite of Splinters of Faith.
+tagline: The beginning of the journey.
+theme:
+  accent: "#d4af63"
+  accentContrast: "#17120b"
+  surface: "#211a16"
+  atmosphere: "#59402f"
+completionPercentage: 100
+relatedCollectionIds: []
+trackIds:
+  - TRK-SOF-01-01-00-01

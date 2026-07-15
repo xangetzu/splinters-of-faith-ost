@@ -1,3 +1,10 @@
 # Local source-media imports and archival masters
 /incoming/audio/
 /incoming/mp3.320/
+
+# Astro and Node build artifacts
+/.astro/
+/dist/
+/node_modules/
+/playwright-report/
+/test-results/

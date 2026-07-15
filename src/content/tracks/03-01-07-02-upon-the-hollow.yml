@@ -1,0 +1,16 @@
+stableId: TRK-SOF-03-01-07-02
+sofId: 03-01-07-02
+slug: upon-the-hollow
+title: Upon the Hollow
+status: released
+description: A sacred piece from the Forest collection.
+durationSeconds: 223
+collectionIds: [COL-FOR-001]
+audioAssetIds: [AST-AUD-03-01-07-02-MP3]
+subtype: Sacred
+tags: [forest, sacred]
+credits:
+  - name: Kevin Larsson
+    role: Composer and recording artist
+releaseDate: 2026-06-04
+downloadEnabled: true

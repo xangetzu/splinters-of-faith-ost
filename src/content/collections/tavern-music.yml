@@ -1,0 +1,19 @@
+stableId: COL-TAV-001
+slug: tavern-music
+title: Tavern Music
+status: released
+kind: tavern
+sofScope: 01-02
+description: Music for fellowship, warmth, and rest by the hearth.
+tagline: A seat by the fire awaits.
+theme:
+  accent: "#d49452"
+  accentContrast: "#1e1008"
+  surface: "#2a1710"
+  atmosphere: "#744226"
+completionPercentage: 100
+relatedCollectionIds:
+  - COL-SUI-001
+trackIds:
+  - TRK-SOF-01-02-00-01
+  - TRK-SOF-01-02-00-02

@@ -1,0 +1,16 @@
+stableId: TRK-SOF-03-01-04-02
+sofId: 03-01-04-02
+slug: ash-and-iron
+title: Ash and Iron
+status: released
+description: A battle piece from the Forest collection.
+durationSeconds: 178
+collectionIds: [COL-FOR-001]
+audioAssetIds: [AST-AUD-03-01-04-02-MP3]
+subtype: Battle
+tags: [forest, battle]
+credits:
+  - name: Kevin Larsson
+    role: Composer and recording artist
+releaseDate: 2026-06-02
+downloadEnabled: true

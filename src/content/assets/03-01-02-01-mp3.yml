@@ -1,0 +1,20 @@
+stableId: AST-AUD-03-01-02-01-MP3
+type: audio
+title: Under Verdant Skies MP3
+purpose: both
+codec: mp3
+bitrateKbps: 320
+sampleRateHz: 44100
+channels: 2
+sources:
+  - url: audio/03-01-02-01/under-verdant-skies.mp3
+    mimeType: audio/mpeg
+    byteSize: 13642480
+    provider: github-pages
+rights:
+  copyrightHolder: Kevin Larsson
+  usage:
+    - stream
+    - download
+  licenseName: CC BY-NC 4.0
+  licenseUrl: https://creativecommons.org/licenses/by-nc/4.0/
