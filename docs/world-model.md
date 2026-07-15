@@ -253,7 +253,7 @@ Major objects should have permanent identifiers.
 
 Examples:
 
-COL-FOR-001 TRK-FOR-007 ART-FOR-HERO-001
+COL-FOR-001 TRK-SOF-03-01-05-01 ART-FOR-HERO-001
 
 Names may change.
 

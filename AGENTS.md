@@ -17,12 +17,19 @@ documentation.
 
 Refer to:
 
+-   architecture-review-and-approval.md
 -   project-overview.md
 -   site-design-vision.md
 -   design-system.md
 -   world-model.md
 -   site-architecture.md
 -   component-library.md
+-   content-schema.md
+-   player-behavior.md
+
+Use `.github/codex-instructions.md` for the consolidated development
+instructions. When documents conflict, approved architecture decisions and
+specifications take precedence over earlier exploratory guidance.
 
 The project is an interactive soundtrack companion, not a generic music
 website.

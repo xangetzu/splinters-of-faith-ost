@@ -1,0 +1,26 @@
+* text=auto
+
+*.md text eol=lf
+*.astro text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.mjs text eol=lf
+*.ts text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+.editorconfig text eol=lf
+.gitattributes text eol=lf
+.gitignore text eol=lf
+
+*.avif binary
+*.flac binary
+*.gif binary
+*.ico binary
+*.jpeg binary
+*.jpg binary
+*.mp3 binary
+*.ogg binary
+*.opus binary
+*.png binary
+*.webp binary
