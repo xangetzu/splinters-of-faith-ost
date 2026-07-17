@@ -51,6 +51,11 @@ accessibility, and an artwork-first presentation.
 
 Everything is data; the website is one presentation of the world model.
 
+The Session Chronicle is approved future scope, but its recording, ingestion,
+and public-site implementation are intentionally deferred. Continue the current
+soundtrack, artwork, and content work until the project owner explicitly resumes
+Chronicle development.
+
 Assume the soundtrack and artwork libraries will grow for many years. Tracks may
 have multiple audio formats, artwork may serve multiple roles, and production
 media may live outside the repository. Never couple components to a particular

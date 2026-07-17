@@ -26,6 +26,12 @@ Refer to:
 -   component-library.md
 -   content-schema.md
 -   player-behavior.md
+-   first-vertical-slice.md
+-   media-import-manifest.md
+-   art-direction.md
+-   art-production-workflow.md
+-   session-chronicle.md
+-   repository-guide.md
 
 Use `.github/codex-instructions.md` for the consolidated development
 instructions. When documents conflict, approved architecture decisions and

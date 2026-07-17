@@ -1,6 +1,5 @@
-# Local source-media imports and archival masters
-/incoming/audio/
-/incoming/mp3.320/
+# Local/private staging, archival masters, drafts, and working imports
+/incoming/
 
 # Astro and Node build artifacts
 /.astro/
